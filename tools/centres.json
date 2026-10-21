@@ -1,0 +1,65 @@
+[
+ {
+  "id": "atlanta",
+  "city": "Atlanta",
+  "state": "GA",
+  "address": "100 Peachtree Street, Suite 225, 2nd Floor, Atlanta, GA 30303",
+  "days": "Saturday only",
+  "hours": "9:00 a.m. to 4:00 p.m. (submission and collection)",
+  "note": ""
+ },
+ {
+  "id": "chicago",
+  "city": "Chicago",
+  "state": "IL",
+  "address": "142 E Ontario Street, Suite 1700, Chicago, IL 60611",
+  "days": "Monday to Friday (except public holidays)",
+  "hours": "9:00 a.m. to 4:00 p.m. (submission and collection)",
+  "note": ""
+ },
+ {
+  "id": "houston",
+  "city": "Houston",
+  "state": "TX",
+  "address": "1001 Texas Ave, Floor 10, Suite 1020, Houston, TX 77002",
+  "days": "Monday to Friday (except public holidays)",
+  "hours": "9:00 a.m. to 4:00 p.m. (submission and collection)",
+  "note": ""
+ },
+ {
+  "id": "los-angeles",
+  "city": "Los Angeles",
+  "state": "CA",
+  "address": "5757 Wilshire Blvd, Suite 504, Los Angeles, CA 90036",
+  "days": "Monday to Friday (except public holidays)",
+  "hours": "9:00 a.m. to 4:00 p.m. (submission and collection)",
+  "note": ""
+ },
+ {
+  "id": "miami",
+  "city": "Miami (Coral Gables)",
+  "state": "FL",
+  "address": "2655 S Le Jeune Road, PH-1A, Coral Gables, FL 33134",
+  "days": "Saturday only",
+  "hours": "9:00 a.m. to 4:00 p.m. (submission and collection)",
+  "note": ""
+ },
+ {
+  "id": "new-york",
+  "city": "New York",
+  "state": "NY",
+  "address": "128 E 32nd Street, Floor 2, New York, NY 10016",
+  "days": "Monday to Friday (except public holidays)",
+  "hours": "9:00 a.m. to 4:00 p.m. (submission and collection)",
+  "note": ""
+ },
+ {
+  "id": "washington-dc",
+  "city": "Washington, DC",
+  "state": "DC",
+  "address": "1025 Vermont Ave NW, Suite 200, Washington, DC 20005",
+  "days": "Monday to Friday (except public holidays)",
+  "hours": "9:00 a.m. to 4:00 p.m. (submission and collection)",
+  "note": "Listed by DHA and SA Chamber. The SA Embassy SA Citizens Services page lists VFS centres in Atlanta, Miami, Houston, Chicago, Los Angeles and New York and does not mention Washington DC."
+ }
+]
