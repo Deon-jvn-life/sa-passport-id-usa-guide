@@ -9,12 +9,26 @@ S=dict(dha="https://www.dha.gov.za/index.php/civic-services/dha-service-centres-
 emb="https://www.saembassy.org/sa-citizens-services/",ny="https://dirco.gov.za/newyork/",la="https://dirco.gov.za/losangeles/",
  lalaunch="https://dirco.gov.za/losangeles/2026/01/29/the-launch-of-the-new-vfs-centre/",ch1="https://www.sachamberusa.com/great-news-for-passport-renewals/",
  ch2="https://www.sachamberusa.com/info-on-new-application-process-for-south-african-passport-in-the-us/",chpdf="https://www.sachamberusa.com/wp-content/uploads/2026/01/DHA-Presentation_Oct-2025.pdf",
- etc="https://www.saembassy.org/wp-content/uploads/2025/08/EMERGENCY-TRAVEL-CERTIFICATE-ETC.pdf",embadult="https://www.saembassy.org/wp-content/uploads/2026/02/ADULT-PASSPORT-CHECKLIST.pdf",
+ etc="https://www.saembassy.org/wp-content/uploads/2025/08/EMERGENCY-TRAVEL-CERTIFICATE-ETC.pdf", embadult="https://www.saembassy.org/wp-content/uploads/2026/02/ADULT-PASSPORT-CHECKLIST.pdf",
  embid="https://www.saembassy.org/wp-content/uploads/2026/02/RE-ISSUE-OF-ID-BOOK.pdf",photo="https://www.saembassy.org/wp-content/uploads/2023/09/Passport_ID_PhotoSpecifications-scaled.jpg",
- rol="https://www.saembassy.org/wp-content/uploads/2023/09/rol.pdf",finder="https://sa-smart-id-bank-finder.vercel.app")
+ rol="https://www.saembassy.org/wp-content/uploads/2023/09/rol.pdf",finder="https://sa-smart-id-bank-finder.vercel.app",
+ embbirth="https://www.saembassy.org/visas/civic_immigration/birth_registration/",
+ cc="https://www.concourt.org.za/index.php/judgement/590-democratic-alliance-v-minister-of-home-affairs-and-another-cct184-23",
+ saflii="https://www.saflii.org/za/cases/ZACC/2025/8.html",
+ dhaannounce="https://www.dha.gov.za/index.php/statements-speeches/1980-restoring-dignity-through-digital-progress-home-affairs-launches-new-citizenship-portal",
+ dhacit="https://www.dha.gov.za/index.php/citizenship1",
+ portal="https://myhomeaffairsonline.dha.gov.za/reinstatement-of-citizenship",
+ portalfaq="https://myhomeaffairsonline.dha.gov.za/faq",
+ embcit="https://www.saembassy.org/visas/civic_immigration/citizenship/",
+ embret="https://www.saembassy.org/wp-content/uploads/2024/02/RETETION-OF-SA-CITIZENSHIP.pdf",
+ embex="https://www.saembassy.org/wp-content/uploads/2024/02/EXEMPTION-OF-SA-CITIZENSHIP.pdf",
+ embren="https://www.saembassy.org/wp-content/uploads/2024/02/RENUNCIATION-OF-SA-CITIZENSHIP.pdf",
+ nyciv="https://dirco.gov.za/newyork/immigration-and-civic/",
+ nyimm="https://dirco.gov.za/newyork/immigration-services/",
+ laimm="https://dirco.gov.za/losangeles/immigration-services/")
 def src(*k): return ' <span class="src">['+', '.join(a(S[x]) for x in k)+']</span>'
 C=json.load(open(os.path.join(HERE,'centres.json'))); M=json.load(open(os.path.join(HERE,'missions.json')))
-NAV=[('index.html','Home'),('centres/index.html','VFS centres'),('what-to-bring/index.html','What to bring'),('fees/index.html','Fees'),('smart-id/index.html','Smart ID'),('lost-passport/index.html','Lost passport'),('tracking/index.html','Tracking'),('embassy-consulates/index.html','Embassy and consulates'),('faq/index.html','FAQ')]
+NAV=[('index.html','Home'),('centres/index.html','VFS centres'),('what-to-bring/index.html','What to bring'),('fees/index.html','Fees'),('smart-id/index.html','Smart ID'),('lost-passport/index.html','Lost passport'),('citizenship/index.html','Citizenship'),('tracking/index.html','Tracking'),('embassy-consulates/index.html','Embassy and consulates'),('faq/index.html','FAQ')]
 FOOT=f'This is an unofficial, independent guide for South Africans in the United States. It is not affiliated with the Department of Home Affairs (DHA), DIRCO, the South African Embassy or consulates, VFS Global or the SA Chamber of Commerce in the USA. Facts are taken from the official pages linked on each page; always confirm on {a(S["vfs"],"the VFS Global South Africa USA site")} and {a(S["dha"],"DHA")} before you travel or pay.'
 s=Site(ROOT,BASE,"SA Passport and ID Guide (USA)",NAV,FOOT,CSS)
 BOOK=f'<div class="card warn"><strong>Appointments only at VFS. No walk-ins.</strong> The SA Chamber USA summary of the official DHA/DIRCO webinar says there are no walk-in appointments at VFS centres and that all appointments must be made online on the VFS website{src("ch2")}. Any VFS centre can be used regardless of the state you live in{src("ch1","ch2")}. Book only through {a(S["vfs"],"services.vfsglobal.com/usa/en/zap")}.</div>'
@@ -34,12 +48,12 @@ body=f'''<h1>Renew a South African passport or ID in the USA</h1>
 {BOOK}
 <h2>VFS Global centres in the USA</h2>{TH}{''.join(centre_card(x).replace('href="','href="centres/',1) for x in C)}</table></div>
 <p>Saturday only: Atlanta and Miami. Weekdays: Chicago, Houston, Los Angeles, New York and Washington DC{src("dha","ch1")}.</p>
-<h2>Start here</h2><ul><li>{a('what-to-bring/index.html','What to bring')}: forms DHA-73, DHA-529 and DHA-9, originals plus copies, four photos.</li><li>{a('fees/index.html','Fees')}: adult or child renewal $127 in total at VFS ($67 consular + $60 VFS), card only{src("vfsinfo")}.</li><li>{a('smart-id/index.html','Smart ID')}: first ID and re-issue options and what is still unclear.</li><li>{a('lost-passport/index.html','Lost passport and emergency travel certificate')}.</li><li>{a('tracking/index.html','Tracking your application')}.</li><li>{a('embassy-consulates/index.html','Embassy and consulates')}: areas, hours and emergency numbers.</li><li>{a('faq/index.html','FAQ')}.</li></ul>
+<h2>Start here</h2><ul><li>{a('what-to-bring/index.html','What to bring')}: forms DHA-73, DHA-529 and DHA-9, originals plus copies, four photos.</li><li>{a('fees/index.html','Fees')}: adult or child renewal $127 in total at VFS ($67 consular + $60 VFS), card only{src("vfsinfo")}.</li><li>{a('smart-id/index.html','Smart ID')}: first ID and re-issue options and what is still unclear.</li><li>{a('lost-passport/index.html','Lost passport and emergency travel certificate')}.</li><li>{a('citizenship/index.html','Citizenship')}: the 6 May 2025 Constitutional Court ruling, who is excluded, and the DHA online status check.</li><li>{a('tracking/index.html','Tracking your application')}.</li><li>{a('embassy-consulates/index.html','Embassy and consulates')}: areas, hours and emergency numbers.</li><li>{a('faq/index.html','FAQ')}.</li></ul>
 {CONF}
 <div class="card note"><strong>Not eligible at VFS centres:</strong> DHA says applicants aged 16 and above (including those 15 turning 16 that year) must first get an identity document before a passport, and citizens born abroad whose birth is not yet registered cannot be served at the centres; they must go to a South African mission{src("dha")}. VFS services do not include the Emergency Travel Certificate{src("ch2")}.</div>
 <p>Need to know which South African banks let you apply for a Smart ID in South Africa? See the separate {a(S["finder"],"SA Smart ID bank branch finder")}.</p>'''
 s.page('index.html',"South African passport and Smart ID renewal in the USA: VFS centres, fees, documents",
- "Unofficial guide for South Africans in the USA: VFS Global centres with days and hours, documents, fees, tracking, lost passports and emergency travel certificates.",body)
+ "Unofficial guide for South Africans in the USA: VFS Global centres with days and hours, documents, fees, tracking, lost passports, emergency travel certificates, and citizenship after taking another nationality.",body)
 b=f'<h1>VFS Global centres for South African passports in the USA</h1><p>All {len(C)} centres listed by DHA on {D}{src("dha")}. Hours are for both submission and collection.</p>{BOOK}{TH}{"".join(centre_card(x) for x in C)}</table></div><p class="src">VFS helpline as published in the VFS presentation hosted by SA Chamber USA: +1 313 462 0561, info.sappidusa@vfshelpline.com, business hours 9:00 a.m. to 4:00 p.m.{src("chpdf")}. The VFS site itself could not be read by our checker on {D} (it blocks automated access), so confirm details there.</p>'
 s.page('centres/index.html',"VFS Global South Africa passport centres in the USA: addresses, days and hours","Every VFS Global centre in the USA for South African passports and ID: address, days, hours and booking link.",b)
 for x in C:
@@ -56,7 +70,7 @@ b=f'''<h1>What to bring to VFS for a South African passport</h1><p>Summarised fr
 <li>DHA-9 fingerprint form: not downloadable at VFS; you complete it at the appointment.</li>
 <li>DI-47 loss report plus a police report, if your passport was lost or stolen.</li>
 <li>Originals and copies of: current SA passport, SA ID (green ID book or Smart ID card), SA birth certificate, marriage certificate if a married surname is to appear in the passport. The centre can certify copies if you show the original.</li>
-<li>Dual citizens: proof of how and when you acquired the other nationality, such as a naturalization certificate and retention certificate. A foreign passport or ID is not proof of how and when you acquired it.</li>
+<li>Dual citizens: proof of how and when you acquired the other nationality, such as a naturalization certificate and retention certificate. A foreign passport or ID is not proof of how and when you acquired it. The February 2026 Embassy adult checklist still asks for a copy of a retention certificate if applicable{src("embadult")}. For the 6 May 2025 ruling and the DHA online check, see {a('../citizenship/index.html','citizenship')}.</li>
 <li>Foreign-language documents need a sworn English translation; foreign birth, marriage and divorce documents must be legalised or apostilled.</li>
 <li>Four colour photos, 35 mm x 45 mm, head and shoulders. Photos can be taken at the centre for a fee. Do not attach them to the form.</li></ul>{src("vfsinfo")}</div>
 <div class="card note"><strong>First adult passport (turning 16):</strong> apply for the first ID card first or together with the passport, and both parents and the child must attend{src("vfsinfo")}.</div>
@@ -68,7 +82,8 @@ rows=[("Passport renewal, adult","$67","$60","$127"),("Passport renewal, adult M
 b=f'''<h1>Fees for South African passports and ID at VFS in the USA</h1><p>As published by VFS Global on {D}{src("vfsinfo")}. Pay at the centre by credit or debit card only; other payment methods are not accepted. The VFS service fee is $60 on top of the consular fee.</p>
 <div class="wrap"><table><tr><th>Service</th><th>Consular fee (USD)</th><th>VFS service fee (USD)</th><th>Total (USD)</th></tr>{''.join(f"<tr><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td></tr>" for r in rows)}</table></div>
 <p class="src">MAXI is the larger passport; the Embassy checklist describes Regular as 32 pages and MAXI as 48 pages{src("embadult")}. Photos at the centre carry a separate fee that VFS does not state on the page we checked{src("vfsinfo")}.</p>
-<h2>Embassy fees (money order, no cards)</h2><div class="card"><ul><li>Passport: $67 regular (32 pages), $133 MAXI (48 pages), $134 regular lost/damaged/stolen, $266 MAXI lost/damaged/stolen, by money order payable to SA Embassy{src("embadult")}.</li><li>Re-issue of ID book: $12 by money order{src("embid")}.</li><li>Emergency Travel Certificate: $12 by money order{src("etc")}.</li><li>The Embassy accepts the exact fee in cash or money order, no card payments{src("emb")}.</li></ul></div>'''
+<h2>Embassy fees (money order, no cards)</h2><div class="card"><ul><li>Passport: $67 regular (32 pages), $133 MAXI (48 pages), $134 regular lost/damaged/stolen, $266 MAXI lost/damaged/stolen, by money order payable to SA Embassy{src("embadult")}.</li><li>Re-issue of ID book: $12 by money order{src("embid")}.</li><li>Emergency Travel Certificate: $12 by money order{src("etc")}.</li><li>The Embassy accepts the exact fee in cash or money order, no card payments{src("emb")}.</li></ul></div>
+<div class="card note"><strong>Citizenship.</strong> The DHA reinstatement FAQ does not state a fee. The Embassy citizenship page still publishes $25 for a section 6(2) retention application made before foreign citizenship is taken, and $25 for a section 26(4) exemption for foreign citizenship taken before 6 October 1995{src("dhacit","embcit")}. See {a('../citizenship/index.html','citizenship')}.</div>'''
 s.page('fees/index.html',"South African passport fees in the USA (VFS and Embassy)","Published VFS Global and SA Embassy fees for South African passport renewal, lost passport, MAXI, child, ID and birth registration in the USA.",b)
 b=f'''<h1>South African Smart ID in the USA</h1>
 <div class="card"><p><strong>First ID (16 and older):</strong> VFS takes first ID applications for children aged 15 turning 16 in the year and for anyone 16 or older who never applied for a first ID. Fee $60 (consular $0 + VFS $60){src("vfsinfo","lalaunch")}.</p>
@@ -82,7 +97,8 @@ b=f'''<h1>Lost South African passport in the USA and emergency travel</h1>
 <h2>Replacing a lost or stolen passport</h2><div class="card"><ul><li>Report the loss to the police and complete form DI-47 (loss of passport report); bring both to VFS with your other documents{src("vfsinfo")}.</li><li>Fees at VFS: lost adult or child passport $194 ($134 + $60); lost MAXI $326 ($266 + $60){src("vfsinfo")}.</li><li>The Embassy also publishes a {a(S["rol"],"report of lost travel document form")}{src("emb")}.</li></ul></div>
 <h2>Emergency Travel Certificate (ETC)</h2><div class="card warn"><p>VFS does not issue ETCs{src("ch2")}. The ETC is handled by the Embassy. It is a one-way travel document to South Africa only, valid for a maximum of three months from issue{src("etc")}.</p>
 <ul><li>Completed DHA-73 and DHA-9 (a copy of the original DHA-9 can be used; prints must be clear)</li><li>2 photos (colour, no smile, mouth closed, no glasses)</li><li>Copy of passport, SA birth certificate or identity document</li><li>Proof of travel arrangements and a written reason for urgent travel to South Africa</li><li>Fee $12 money order payable to SA Embassy, plus a prepaid envelope for collection</li><li>Minimum processing period 7 business days. Submit or mail to the South African Embassy, 3051 Massachusetts Avenue NW, Washington, DC 20008.</li></ul>{src("etc")}
-<p>Home Affairs will not approve an ETC for applicants eligible for a first ID (turning 16 and above) who have not applied for it{src("etc")}.</p></div>
+<p>Home Affairs will not approve an ETC for applicants eligible for a first ID (turning 16 and above) who have not applied for it{src("etc")}.</p>
+<p>DHA says a South African living abroad who still holds South African citizenship needs a valid South African passport to travel to South Africa, and that proof of a passport application is not accepted for travel. See {a('../citizenship/index.html','citizenship')}{src("dhacit")}.</p></div>
 <h2>Emergency contacts</h2><ul>{EMC}</ul>'''
 s.page('lost-passport/index.html',"Lost South African passport in the USA and Emergency Travel Certificate","What to do if you lose your South African passport in the USA: police report, DI-47, VFS fees and Embassy Emergency Travel Certificate requirements.",b)
 b=f'''<h1>Track a South African passport or ID application from the USA</h1><div class="card"><ul>
@@ -92,7 +108,7 @@ b=f'''<h1>Track a South African passport or ID application from the USA</h1><div
 <li><strong>Los Angeles Consulate:</strong> to have a passport returned by post, bring a prepaid self-addressed USPS or UPS envelope; FedEx is not accepted{src("la")}.</li></ul></div>
 <div class="card note">Expected timing varies by source: six to eight weeks (VFS), 8 to 12 weeks or up to 2 to 3 months (SA Chamber webinar summary), at least 6 to 8 months (Embassy){src("vfsinfo","ch2","emb")}.</div>'''
 s.page('tracking/index.html',"Track a South African passport application in the USA","How to track a South African passport or ID application made at VFS or the Embassy in the USA, and how collection and courier delivery work.",b)
-b='<h1>South African Embassy and consulates in the USA</h1><p>VFS centres now take most passport, first ID and birth registration applications. The missions still handle emergency travel certificates, late birth registration and other civic matters.</p>'+''.join(f'<div class="card"><h2>{esc(m["name"])}</h2><p><strong>Address:</strong> {esc(m["address"])}</p><p><strong>Phone:</strong> {esc(m["phone"])}</p><p><strong>Email:</strong> {esc(m["email"])}</p><p><strong>Hours:</strong> {esc(m["hours"])}</p><p><strong>Area served:</strong> {esc(m["area"])}</p><p class="src">[{a(m["url"],"official page")}]</p></div>' for m in M)+f'<div class="card note">Gap: no official web page for a South African consulate in Chicago could be confirmed on {D}; Chicago appears here only as a VFS centre{src("dha")}.</div>'
+b='<h1>South African Embassy and consulates in the USA</h1><p>VFS centres now take most passport, first ID and birth registration applications. The missions still handle emergency travel certificates, late birth registration and other civic matters. The Embassy citizens services page links to the DHA citizenship reinstatement portal. See '+a('../citizenship/index.html','citizenship')+src("emb","portal")+'.</p>'+''.join(f'<div class="card"><h2>{esc(m["name"])}</h2><p><strong>Address:</strong> {esc(m["address"])}</p><p><strong>Phone:</strong> {esc(m["phone"])}</p><p><strong>Email:</strong> {esc(m["email"])}</p><p><strong>Hours:</strong> {esc(m["hours"])}</p><p><strong>Area served:</strong> {esc(m["area"])}</p><p class="src">[{a(m["url"],"official page")}]</p></div>' for m in M)+f'<div class="card note">Gap: no official web page for a South African consulate in Chicago could be confirmed on {D}; Chicago appears here only as a VFS centre{src("dha")}.</div>'
 s.page('embassy-consulates/index.html',"South African Embassy and consulates in the USA: hours and contacts","Addresses, hours, emergency phone numbers and areas served for the South African Embassy in Washington and consulates in New York and Los Angeles.",b)
 faq=[("Can I walk in at a VFS centre?",f"No. The SA Chamber summary of the official webinar says there are no walk-in appointments and all appointments are made online{src('ch2')}."),
 ("Do I have to use the centre for my state?",f"No. You can use any of the US centres regardless of your state of residence{src('ch1')}."),
@@ -101,8 +117,96 @@ faq=[("Can I walk in at a VFS centre?",f"No. The SA Chamber summary of the offic
 ("How much is an adult renewal?",f"$127 at VFS: $67 consular fee plus $60 VFS service fee. MAXI is $193{src('vfsinfo')}."),
 ("How many photos?",f"Four colour photos, 35 x 45 mm, for passports and IDs at VFS{src('vfsinfo')}."),
 ("My child is 15 and turns 16 this year. Can they renew a passport?",f"They must apply for a first ID first or together with the first adult passport; both parents and the child must attend{src('vfsinfo','dha')}."),
-("I am travelling to South Africa in a few days and my passport is lost.",f"Contact the Embassy about an Emergency Travel Certificate; minimum processing is 7 business days and VFS does not issue them{src('etc','ch2')}."),
+("I am travelling to South Africa in a few days and my passport is lost.",f"Contact the Embassy about an Emergency Travel Certificate; minimum processing is 7 business days and VFS does not issue them{src('etc','ch2')}. DHA says proof of a passport application is not accepted for travel to South Africa{src('dhacit')}."),
+("I became a US citizen. Did I lose my South African citizenship?",f"The Constitutional Court declared the automatic-loss rule in section 6(1)(a) invalid from 6 October 1995, and DHA says people who lost citizenship under that rule are considered to have retained it. Voluntary renunciation, and loss before 6 October 1995, are excluded. Check your own record on the DHA portal. See {a('../citizenship/index.html','citizenship')}{src('cc','dhacit')}."),
 ("When should I apply?",f"VFS recommends booking at least 18 months before expiry; the Embassy suggests 12 months{src('vfsinfo','emb')}."),
 ("Can I renew my Smart ID card at VFS?",f"Sources disagree. VFS lists a Smart ID re-issue fee, while DHA and SA Chamber describe the Smart ID card as a later phase. See {a('../smart-id/index.html','Smart ID')}.")]
-s.page('faq/index.html',"FAQ: South African passports and ID in the USA","Short sourced answers about South African passport renewal, Smart ID, VFS appointments and emergency travel in the USA.",'<h1>FAQ: South African passports and ID in the USA</h1>'+''.join(f'<div class="card"><strong>{q}</strong><p>{x}</p></div>' for q,x in faq))
+s.page('faq/index.html',"FAQ: South African passports and ID in the USA","Short sourced answers about South African passport renewal, Smart ID, VFS appointments, citizenship and emergency travel in the USA.",'<h1>FAQ: South African passports and ID in the USA</h1>'+''.join(f'<div class="card"><strong>{q}</strong><p>{x}</p></div>' for q,x in faq))
+b=f'''<h1>Retaining South African citizenship when you take another citizenship</h1>
+<p>For South Africans in the United States who have taken US citizenship, or another citizenship, or who are about to. This page summarises the Constitutional Court order of 6 May 2025 and the Home Affairs pages that implement it. It is not legal advice. Confirm your own record before you travel or pay.</p>
+<h2>What the Court decided</h2>
+<div class="card"><p>On 6 May 2025 the Constitutional Court confirmed the Supreme Court of Appeal's order in <em>Democratic Alliance v Minister of Home Affairs</em> (CCT 184/23). It declared section 6(1)(a) of the South African Citizenship Act 88 of 1995 inconsistent with the Constitution and invalid from 6 October 1995. Citizens who lost their citizenship by operation of that section are deemed not to have lost it{src("cc","saflii")}. DHA's 24 November 2025 statement says the judgment took immediate effect and that affected people are deemed never to have lost their citizenship{src("dhaannounce")}.</p>
+<p>The struck-down section applied to a citizen who, whilst not a minor, by a voluntary and formal act other than marriage, acquired the citizenship or nationality of another country. The old rule removed South African citizenship unless the Minister had given permission to retain it beforehand. The Court held that this ministerial power, in section 6(2), did not save section 6(1)(a){src("saflii","cc")}. The order does not say that every other loss-of-citizenship rule in the Act was struck down.</p></div>
+<h2>Who DHA says is covered</h2>
+<div class="card"><ul>
+<li>Anyone who lost citizenship under section 6(1)(a) is considered to have retained it. DHA tells those people to check their status on the official portal and, if needed, start reinstatement there{src("dhacit","portal")}.</li>
+<li>If your second nationality was acquired after 6 October 1995 and you did not obtain ministerial permission, DHA says you are automatically covered and considered to have retained South African citizenship. DHA still says you may use the portal to confirm your status{src("dhacit")}.</li>
+<li>The portal FAQ says the ruling covers both citizens by birth and people who obtained citizenship through naturalisation, if the naturalised citizenship was lost after acquiring another country's citizenship{src("portalfaq")}.</li>
+<li>Children born while a parent was incorrectly recorded as having lost citizenship may have affected statuses. DHA says the system will advise if dependants need further steps. It does not list those steps{src("dhacit")}.</li>
+</ul>
+<p>The portal is {a(S["portal"],"myhomeaffairsonline.dha.gov.za/reinstatement-of-citizenship")}. The Embassy citizens services page links to My Home Affairs Online for citizenship reinstatement{src("emb")}.</p></div>
+<h2>Who is not covered</h2>
+<div class="card warn"><ul>
+<li><strong>Voluntary renunciation.</strong> DHA says the ruling does not apply to people who voluntarily renounced South African citizenship, which DHA describes as a common requirement when obtaining citizenship in another country{src("dhacit")}.</li>
+<li><strong>Before 6 October 1995.</strong> People who lost citizenship through conversion before 6 October 1995 are not eligible for reinstatement under this judgment{src("dhacit")}.</li>
+</ul>
+<p>Neither the judgment nor the DHA FAQ says whether the United States naturalization oath counts as voluntary renunciation of South African citizenship. This page does not decide that. Use the portal to check the record in your name.</p></div>
+<h2>Check or confirm your status</h2>
+<p>DHA's reinstatement FAQ, checked on this date, describes this process. Do it yourself. Someone may help you, but you must be the person verified by the selfie or passport upload{src("dhacit")}.</p>
+<div class="card"><ol>
+<li>Create a profile at {a("https://myhomeaffairsonline.dha.gov.za/","My Home Affairs Online")}. DHA emails a verification link. Log in with that email and password{src("dhacit")}.</li>
+<li>Check your citizen status. You need your ID number{src("dhaannounce","dhacit")}.</li>
+<li>Take a selfie in a well-lit place with a white background. If the selfie is not enough, scan a passport. A South African or foreign passport is accepted, including an expired passport. Do not cover the page with your fingers, and avoid overhead light on the page{src("dhacit")}.</li>
+<li>If your citizenship is still valid, DHA confirms it and says reinstatement is not necessary{src("dhacit")}.</li>
+<li>If your citizenship may have been revoked, complete the application. DHA says most details are pre-filled from its records. Submit it. You are told by email when it is finalised. Track it under My Applications, at the top right of the homepage{src("dhacit")}.</li>
+</ol></div>
+<div class="card"><ul>
+<li><strong>From the USA:</strong> yes. The platform is global. You may use a foreign passport if you do not have a valid South African passport{src("dhacit","portalfaq")}.</li>
+<li><strong>Time:</strong> allow 8 to 10 weeks for DHA to review a reinstatement application. If the record already shows you as a citizen, DHA says you are notified immediately{src("dhacit","dhaannounce")}.</li>
+<li><strong>Fee:</strong> the DHA reinstatement FAQ does not state a fee. Do not assume it is free, and do not pay a figure from the older Embassy retention forms unless you are filing one of those forms.</li>
+<li><strong>Documents:</strong> a selfie, a passport (South African or foreign, even if expired), and further documents only if the review asks for them{src("dhacit")}.</li>
+<li><strong>Invalid ID number:</strong> DHA says this can happen if the number does not match its records, including where the ID format changed after 1986, or if it was typed wrong. The FAQ gives the contact as HACC on +27800 601 190{src("dhacit")}. The portal FAQ gives the email hacc@dha.gov.za{src("portalfaq")}.</li>
+<li><strong>Passport:</strong> reinstatement does not issue a passport. You apply separately. DHA says that application is at a Home Affairs office or a South African mission abroad{src("dhacit")}. In the USA, VFS takes passport applications. See {a("../what-to-bring/index.html","what to bring")} and {a("../fees/index.html","fees")}.</li>
+</ul></div>
+<div class="card conf"><strong>Conflicts on the official pages (as of 23 October 2026)</strong><ul>
+<li><strong>Must you go to an office?</strong> The DHA FAQ says the process is fully online, and that in rare cases DHA may tell you to visit a Home Affairs office. It does not say a mission in the United States can finish that rare case{src("dhacit")}. The portal FAQ answers "Do I need to visit a Home Affairs office or a South African mission abroad?" with no, and says the entire process is completed online{src("portalfaq")}.</li>
+<li><strong>Is there a certificate?</strong> The DHA FAQ says the outcome is sent electronically, and that you will be told if a certificate is added later{src("dhacit")}. The portal FAQ says you will not receive a certificate of reinstatement. The result is by email, and you can check the updated status on the portal{src("portalfaq")}.</li>
+<li><strong>"Instantly" and 8 to 10 weeks.</strong> The Minister's 24 November 2025 statement describes correcting the population register from anywhere in the world, and says a person whose citizenship is still valid is notified immediately{src("dhaannounce")}. The same department's FAQ says a submitted reinstatement application takes 8 to 10 weeks because of risk checks{src("dhacit")}.</li>
+</ul></div>
+<h2>Passport applications still ask for a retention certificate</h2>
+<div class="card note"><p>The Embassy adult passport checklist dated in the file path February 2026, after the judgment and after the portal launch, still asks for a "Copy of Retention Certificate (if applicable)"{src("embadult")}. The checklist does not say when it is applicable, and it does not say that a portal email replaces it.</p>
+<p>The VFS consular services page, as summarised on {a("../what-to-bring/index.html","what to bring")}, asks dual citizens for proof of how and when the other nationality was acquired, and gives a naturalization certificate and a retention certificate as examples. An automated re-check of that VFS page on 23 October 2026 returned 403 Forbidden, so the current VFS wording was not re-read. Open the VFS page yourself before you book.</p></div>
+<h2>Travelling to South Africa</h2>
+<div class="card"><ul>
+<li>DHA says South Africans living and working abroad must have a valid South African passport to travel to South Africa. If you still hold South African citizenship, DHA says you will be penalised for entering on a foreign passport. The FAQ does not state the penalty amount{src("dhacit")}.</li>
+<li>Proof that you have applied for a South African passport is not accepted for travel. In an emergency, DHA says you may apply for an Emergency Travel Certificate at your local mission. See {a("../lost-passport/index.html","lost passport and the ETC")}{src("dhacit")}.</li>
+<li>A minor who has dual citizenship also needs a valid South African passport to enter South Africa. DHA's answer is "Yes"{src("dhacit")}.</li>
+<li>A child who was never registered as a South African citizen may travel on a foreign passport, subject to visa requirements. To register that child, DHA says you apply for foreign birth registration at the mission or a local office{src("dhacit")}. Where that application is lodged is in conflict: the Embassy birth registration page still describes mailing it in{src("embbirth")}; the citizens services page says no mailed-in birth registration will be processed and points birth registration to VFS{src("emb")}; DHA says a citizen born abroad whose birth is not on the population register cannot be served at the VFS centres and must go to a mission{src("dha")}. This site does not yet have a full birth-registration page.</li>
+</ul></div>
+<div class="card conf"><strong>Same FAQ, two answers on a foreign passport.</strong> One answer says you may not travel to South Africa on a foreign passport if you have no valid South African passport. A later answer says that if the Court reinstated your citizenship without an application, and you did not intend to resume citizenship or obtain a South African passport, you may travel on your foreign passport if the other country allows dual citizenship. If you do not want South African citizenship, that answer says you may apply for renunciation{src("dhacit")}. Read both answers on the FAQ before you travel. This guide cannot tell you which one an official will apply to you.</div>
+<h2>If you do not want South African citizenship</h2>
+<div class="card"><p>DHA says you may apply for renunciation{src("dhacit")}. The Embassy still publishes a renunciation requirements PDF, linked from the citizens services page{src("emb","embren")}:</p>
+<ul>
+<li>DHA-246 renunciation form and BI-529</li>
+<li>Copy of birth certificate or passport, if available</li>
+<li>Original South African passport, ID book or card</li>
+<li>Copy of the US naturalization certificate, or other foreign citizenship</li>
+<li>Minimum processing period 6 to 8 months</li>
+<li>The PDF says to mail the application to the South African Embassy, 3051 Massachusetts Avenue NW, Washington, DC 20008</li>
+</ul>
+<p>The PDF does not state a fee{src("embren")}. The citizens services notice that no mailed-in applications will be processed names passport, identity document and birth registration. It does not name renunciation{src("emb")}. Confirm with the Embassy before you post original documents.</p></div>
+<h2>Older Embassy and consulate pages</h2>
+<p>These pages are still online. They describe the pre-judgment retention and exemption process. They do not mention the 6 May 2025 order.</p>
+<div class="card conf"><ul>
+<li><strong>Embassy citizenship page, section 6(2).</strong> It says a citizen who intends to retain citizenship must apply before foreign citizenship is taken, and should have the exemption certificate in hand first. It lists BI-529E, BI-1664, a valid passport, proof of South African citizenship, a notarized letter that the foreign citizenship has not been taken up, proof of current status in that country, a fee of $25, and 4 to 6 weeks{src("embcit")}.</li>
+<li><strong>Embassy retention PDF</strong> (file path February 2024): DHA-1664, BI-529, copy of the South African passport, copy of the US permanent residence card, a notarized affidavit that you have not yet taken up US citizenship, $25 money order payable to the SA Embassy, 30 business days, mailed to the Embassy{src("embret")}.</li>
+<li><strong>Before 6 October 1995.</strong> The Embassy still publishes a section 26(4) exemption for foreign citizenship taken before that date: BI-529, proof of the foreign citizenship, copy of the South African passport, $25, and 30 business days, mailed to the Embassy. The citizenship page calls the form BI-1666. The PDF and the New York forms list call it DHA-1666{src("embcit","embex","nyciv")}. DHA says this judgment does not reinstate that group{src("dhacit")}.</li>
+<li><strong>New York.</strong> The consulate's civic forms list still includes retention on DHA-1664 and a section 26(4) exemption on DHA-1666. That list gives no fee and no processing time{src("nyciv")}. The New York and Los Angeles immigration pages still list retention of citizenship, determination of citizenship, and renunciation. They do not mention the 2025 judgment or the portal{src("nyimm","laimm")}.</li>
+</ul>
+<p>If you already hold another citizenship, or you are about to take one, start with the DHA portal. The section that used to remove citizenship for that act is invalid from 6 October 1995{src("cc","dhacit")}. If VFS or the Embassy still asks for a retention certificate with a passport application, the February 2026 checklist shows that request is still in print{src("embadult")}.</p></div>
+<h2>Sources checked</h2>
+<ul>
+<li>{a(S["cc"],"Constitutional Court, media summary and order, 6 May 2025")}</li>
+<li>{a(S["saflii"],"Full judgment, SAFLII, [2025] ZACC 8")}</li>
+<li>{a(S["dhaannounce"],"DHA statement, 24 November 2025, citizenship portal launch")}</li>
+<li>{a(S["dhacit"],"DHA citizenship reinstatement FAQ")}</li>
+<li>{a(S["portal"],"My Home Affairs Online, reinstatement")}</li>
+<li>{a(S["portalfaq"],"My Home Affairs Online FAQ")}</li>
+<li>{a(S["emb"],"SA Embassy, Washington, citizens services")} (links to the portal)</li>
+<li>{a(S["embcit"],"SA Embassy citizenship page")} (section 6(2) and section 26(4) still published)</li>
+<li>{a(S["embadult"],"SA Embassy adult passport checklist, February 2026")}</li>
+<li>{a(S["embret"],"SA Embassy retention PDF")}, {a(S["embex"],"exemption PDF")}, {a(S["embren"],"renunciation PDF")}</li>
+<li>{a(S["nyciv"],"Consulate General, New York, civic forms")}, {a(S["nyimm"],"New York immigration services")}, {a(S["laimm"],"Los Angeles immigration services")}</li>
+</ul>'''
+s.page('citizenship/index.html',"Retaining South African citizenship after taking another citizenship","What the May 2025 Constitutional Court ruling and Home Affairs say about South Africans in the USA who take another citizenship, who is excluded, and the online status check.",b,checked="23 October 2026",lastmod="2026-10-23")
 s.finish(); print(len(s.pages),'pages',len(C),'centres',len(M),'missions')
