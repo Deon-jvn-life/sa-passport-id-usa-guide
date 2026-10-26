@@ -1,7 +1,7 @@
 """Shared helpers: page shell, robots.txt, sitemap.xml, checks. Copied per site so each folder is self-contained."""
 import os,html as H,shutil,re,sys,json,struct,zlib
 from urllib.parse import urljoin
-D="21 Oct 2026"
+D="26 Oct 2026"
 def esc(s): return H.escape(s,quote=True)
 def a(url,text='source'): return f'<a href="{esc(url)}" rel="noopener">{text}</a>'
 def page_base(page_path):
@@ -131,7 +131,7 @@ class Site:
         s.related=related or []; s.disclaimer=disclaimer or ""; s.verify=verify or {}
         if os.path.exists(s.out): shutil.rmtree(s.out)
         os.makedirs(s.out)
-    def page(s,path,title,desc,body,checked=None,lastmod="2026-10-21",faq=None,crumb=None,sitemap=True,article=None,robots=None):
+    def page(s,path,title,desc,body,checked=None,lastmod="2026-10-26",faq=None,crumb=None,sitemap=True,article=None,robots=None):
         warn_meta(path,title,desc)
         when=checked or D
         r="../"*path.count("/")
