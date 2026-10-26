@@ -152,7 +152,7 @@ class Site:
         if link_last: bits.append(f'<link rel="canonical" href="{canon}">')
         if robots: bits.append(f'<meta name="robots" content="{esc(robots)}">')
         for name,value in s.verify.items():
-            if value: bits.append(f'<meta name="{esc(name)}" content="{esc(value)}">')
+            if value: bits.append(f'<meta name="{esc(name)}" content="{esc(value)}" />')
         bits.append('<link rel="icon" href="/favicon.svg" type="image/svg+xml">')
         bits.append('<link rel="apple-touch-icon" href="/apple-touch-icon.png">')
         og_type="article" if article else "website"
