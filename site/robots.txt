@@ -22,4 +22,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://sa-passport-id-usa-guide-w1ab.vercel.app/sitemap.xml
+Sitemap: https://sa-passport-id-usa-guide.vercel.app/sitemap.xml
