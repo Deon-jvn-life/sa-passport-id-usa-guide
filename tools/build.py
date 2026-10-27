@@ -2,7 +2,7 @@
 """Build the South Africans in the USA passport and Smart ID guide into site/. Run: python3 tools/build.py"""
 import json,os,sys
 HERE=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(HERE); sys.path.insert(0,HERE)
-from sitelib import Site,CSS,D,esc,a
+from sitelib import Site,CSS,D,esc,a,slug,href
 BASE="https://sa-passport-id-usa-guide.vercel.app"
 S=dict(dha="https://www.dha.gov.za/index.php/civic-services/dha-service-centres-abroad",vfs="https://services.vfsglobal.com/usa/en/zap/",
  vfsinfo="https://visa.vfsglobal.com/one-pager/southafrica/usa/passport-services/index.html",book="https://passports.vfsglobal.com/usa/en/zaf/login",
@@ -28,13 +28,69 @@ emb="https://www.saembassy.org/sa-citizens-services/",ny="https://dirco.gov.za/n
  laimm="https://dirco.gov.za/losangeles/immigration-services/")
 def src(*k): return ' <span class="src">['+', '.join(a(S[x]) for x in k)+']</span>'
 C=json.load(open(os.path.join(HERE,'centres.json'))); M=json.load(open(os.path.join(HERE,'missions.json')))
-NAV=[('index.html','Home'),('centres/index.html','VFS centres'),('what-to-bring/index.html','What to bring'),('fees/index.html','Fees'),('smart-id/index.html','Smart ID'),('lost-passport/index.html','Lost passport'),('citizenship/index.html','Citizenship'),('tracking/index.html','Tracking'),('embassy-consulates/index.html','Embassy and consulates'),('faq/index.html','FAQ')]
+CENTRE_NAV=[('centres/index.html','All centres')]+[(f'centres/{x["id"]}/index.html', x["city"]) for x in C]
+GROUPS=[
+ ("Find a centre", CENTRE_NAV),
+ ("Documents and fees",[('what-to-bring/index.html','What to bring'),('fees/index.html','Fees'),('smart-id/index.html','Smart identity card')]),
+ ("After you apply",[('tracking/index.html','Track an application'),('lost-passport/index.html','Lost passport')]),
+ ("Citizenship and offices",[('citizenship/index.html','Citizenship'),('embassy-consulates/index.html','Embassy and consulates')]),
+ ("Using this guide",[('faq/index.html','Common questions'),('find/index.html','All pages'),('disclaimer/index.html','Disclaimer')])]
+ORDER=['what-to-bring/index.html','fees/index.html','smart-id/index.html','centres/index.html','tracking/index.html','lost-passport/index.html','embassy-consulates/index.html','citizenship/index.html']
 FOOT=f'This is an unofficial, independent guide for South Africans in the United States. It is not affiliated with the Department of Home Affairs (DHA), DIRCO, the South African Embassy or consulates, VFS Global or the SA Chamber of Commerce in the USA. Facts are taken from the official pages linked on each page; always confirm on {a(S["vfs"],"the VFS Global South Africa USA site")} and {a(S["dha"],"DHA")} before you travel or pay.'
 DISCLAIMER='For general information only. This independent site is not affiliated with any government, bank or agency. Information can change and may contain errors; always confirm with the official source before you act. Nothing here is legal, financial or professional advice, and we accept no liability for decisions made using it.'
 # Search-console tokens. Leave a value empty and the matching meta tag is omitted.
 VERIFY={"google-site-verification":"XA7XgB_UwrIRvQyNVsnWpSyTyaU6e3-v4g4RBw8RAVI","msvalidate.01":""}
 RELATED=[("https://sa-refugees-usa-guide.vercel.app/","South African refugees in the USA"),("https://sa-smart-id-bank-finder.vercel.app/","SA Smart ID bank branch finder")]
-s=Site(ROOT,BASE,"SA Passport and ID Guide (USA)",NAV,FOOT,CSS,related=RELATED,disclaimer=DISCLAIMER,verify=VERIFY)
+BLURB={
+ 'centres/index.html':'Addresses, days and hours for every centre, and how to book an appointment.',
+ 'what-to-bring/index.html':'Forms, originals, copies and photo rules for a passport or identity document.',
+ 'fees/index.html':'Published fees for a passport, a lost passport, a first identity document and birth registration, and how you pay.',
+ 'smart-id/index.html':'A first identity document and a Smart identity card re-issue, and where the official pages do not match.',
+ 'lost-passport/index.html':'Replacing a lost or stolen passport, and the emergency travel certificate from the Embassy.',
+ 'tracking/index.html':'How to track an application, and how collection and courier delivery are described.',
+ 'citizenship/index.html':'The 6 May 2025 court order, who it does not cover, and the Department of Home Affairs online status check.',
+ 'embassy-consulates/index.html':'Addresses, hours, phone numbers and areas served for the Embassy in Washington and the consulates in New York and Los Angeles.',
+ 'faq/index.html':'Short sourced answers about appointments, documents, fees, a lost passport and citizenship.',
+ 'find/index.html':'Every page on this guide, listed by topic.',
+ 'disclaimer/index.html':'Accuracy, no warranty, liability, external links and how to check the official source.'}
+for x in C:
+    BLURB[f'centres/{x["id"]}/index.html']=f'Address, days, hours, services and how to book the {x["city"]} centre.'
+ALIAS={
+ 'centres/index.html':'vfs centre center address hours appointment booking',
+ 'what-to-bring/index.html':'dha-73 dha-529 dha-9 bi-529 photos documents checklist fingerprints',
+ 'fees/index.html':'cost price dollar maxi consular service fee money order',
+ 'smart-id/index.html':'smart id card identity reissue re-issue green book',
+ 'lost-passport/index.html':'lost stolen emergency travel certificate etc di-47 police',
+ 'tracking/index.html':'track status courier collection delivery',
+ 'citizenship/index.html':'dual citizenship retain renounce constitutional court section 6',
+ 'embassy-consulates/index.html':'embassy consulate washington new york los angeles phone emergency dirco',
+ 'faq/index.html':'questions answers faq',
+ 'find/index.html':'search index all pages',
+ 'disclaimer/index.html':'liability warranty accuracy'}
+for x in C:
+    ALIAS[f'centres/{x["id"]}/index.html']=' '.join([x['id'], x['city'], x['state'], x['address'], 'vfs centre'])
+READ={
+ 'index.html':['what-to-bring/index.html','fees/index.html','centres/index.html','lost-passport/index.html'],
+ 'what-to-bring/index.html':['fees/index.html','smart-id/index.html','centres/index.html','citizenship/index.html'],
+ 'fees/index.html':['what-to-bring/index.html','smart-id/index.html','centres/index.html','citizenship/index.html'],
+ 'smart-id/index.html':['what-to-bring/index.html','fees/index.html','centres/index.html','citizenship/index.html'],
+ 'centres/index.html':['what-to-bring/index.html','fees/index.html','tracking/index.html','embassy-consulates/index.html'],
+ 'tracking/index.html':['centres/index.html','what-to-bring/index.html','lost-passport/index.html','fees/index.html'],
+ 'lost-passport/index.html':['embassy-consulates/index.html','fees/index.html','tracking/index.html','citizenship/index.html'],
+ 'embassy-consulates/index.html':['lost-passport/index.html','centres/index.html','citizenship/index.html','faq/index.html'],
+ 'citizenship/index.html':['what-to-bring/index.html','lost-passport/index.html','embassy-consulates/index.html','smart-id/index.html'],
+ 'faq/index.html':['what-to-bring/index.html','fees/index.html','centres/index.html','citizenship/index.html'],
+ 'find/index.html':['what-to-bring/index.html','centres/index.html','faq/index.html','disclaimer/index.html'],
+ 'disclaimer/index.html':['find/index.html','faq/index.html','what-to-bring/index.html','centres/index.html'],
+ '404.html':['find/index.html','centres/index.html','what-to-bring/index.html','faq/index.html']}
+for x in C:
+    READ[f'centres/{x["id"]}/index.html']=['centres/index.html','what-to-bring/index.html','fees/index.html','tracking/index.html']
+s=Site(ROOT,BASE,"SA Passport and ID Guide (USA)",GROUPS,ORDER,FOOT,CSS,related=RELATED,disclaimer=DISCLAIMER,verify=VERIFY)
+s.summaries=BLURB
+s.read_next=READ
+s.aliases=ALIAS
+s.long_pages={'centres/index.html','what-to-bring/index.html','fees/index.html','smart-id/index.html','lost-passport/index.html','tracking/index.html','embassy-consulates/index.html','citizenship/index.html','faq/index.html'}
+s.flow_toc={'index.html','find/index.html','fees/index.html','centres/index.html'}
 BOOK=f'<div class="card warn"><strong>Book an appointment online.</strong> The Department of Home Affairs lists an online booking link for every United States centre{src("dha")}. VFS Global tells you to book an appointment{src("vfsinfo")}. The New York consulate says you may use the centre that is most convenient{src("ny")}. Book only through {a(S["vfs"],"services.vfsglobal.com/usa/en/zap")}.</div>'
 CONF=f'''<div class="card conf"><strong>Conflicts between official sources (as of {D})</strong><ul>
 <li><strong>Processing time.</strong> VFS Global says six to eight weeks{src("vfsinfo")}. The Embassy says a minimum of 6 to 8 months for applications lodged with it{src("emb","embadult")}.</li>
@@ -46,13 +102,32 @@ def centre_card(x,link=True):
     t=f'<a href="{x["id"]}/index.html">{esc(x["city"])}</a>' if link else esc(x['city'])
     n=f'<p class="src"><span class="tag mix">Note</span> {esc(x["note"])}</p>' if x['note'] else ''
     return f'<tr><td><strong>{t}</strong></td><td>{esc(x["address"])}</td><td>{esc(x["days"])}</td><td>{esc(x["hours"])}{n}</td><td>{a(S["vfs"],"Book on VFS")}{src("dha")}</td></tr>'
-TH='<div class="wrap"><table><tr><th>Centre</th><th>Address</th><th>Days</th><th>Hours</th><th>Booking and sources</th></tr>'
+TH='<div class="wrap" tabindex="0" role="region" aria-label="Centre addresses and hours"><table><tr><th>Centre</th><th>Address</th><th>Days</th><th>Hours</th><th>Booking and sources</th></tr>'
+def topics_html():
+    chunks=['<h2>All topics</h2>','<p>Every page on this guide, grouped by topic.</p>']
+    for g,items in GROUPS:
+        cards=''.join(f'<li><a class="jump" href="{p}"><span class="lt">{esc(t)}</span><span class="ls">{esc(BLURB[p])}</span></a></li>' for p,t in items)
+        chunks.append(f'<section class="topic" id="{slug(g)}"><h3>{esc(g)}</h3><ul class="link-grid">{cards}</ul></section>')
+    return ''.join(chunks)
+TASKS=f'''<h2>Start here</h2>
+<p>Top tasks on this guide.</p>
+<ul class="tasks">
+<li><a class="jump" href="what-to-bring/index.html"><span class="lt">What to bring:</span><span class="ls"> forms DHA-73, DHA-529 and DHA-9, originals plus copies, four photos.</span></a></li>
+<li><a class="jump" href="fees/index.html"><span class="lt">Fees:</span><span class="ls"> adult or child renewal $127 in total at VFS ($67 consular + $60 VFS), card only{src("vfsinfo")}.</span></a></li>
+<li><a class="jump" href="smart-id/index.html"><span class="lt">Smart ID:</span><span class="ls"> first ID and re-issue options and what is still unclear.</span></a></li>
+<li><a class="jump" href="lost-passport/index.html"><span class="lt">Lost passport and emergency travel certificate.</span></a></li>
+<li><a class="jump" href="citizenship/index.html"><span class="lt">Citizenship:</span><span class="ls"> the 6 May 2025 Constitutional Court ruling, who is excluded, and the DHA online status check.</span></a></li>
+<li><a class="jump" href="tracking/index.html"><span class="lt">Tracking your application.</span></a></li>
+<li><a class="jump" href="embassy-consulates/index.html"><span class="lt">Embassy and consulates:</span><span class="ls"> areas, hours and emergency numbers.</span></a></li>
+<li><a class="jump" href="faq/index.html"><span class="lt">FAQ.</span></a></li>
+</ul>'''
 body=f'''<h1>Renew a South African passport or ID in the USA</h1>
 <p>A plain-language guide for South Africans living in the United States. Since late 2025 and January 2026, Department of Home Affairs passport, first identity document and birth registration applications are taken by appointment at {len(C)} VFS Global centres in the United States{src("dha","ny")}. This guide lists every centre with days and hours, what to bring, fees exactly as published, tracking, and what to do about a lost passport or urgent travel.</p>
 {BOOK}
+{TASKS}
+{topics_html()}
 <h2>VFS Global centres in the USA</h2>{TH}{''.join(centre_card(x).replace('href="','href="centres/',1) for x in C)}</table></div>
 <p>Saturday only: Atlanta and Miami. Weekdays: Chicago, Houston, Los Angeles, New York and Washington, DC{src("dha")}.</p>
-<h2>Start here</h2><ul><li>{a('what-to-bring/index.html','What to bring')}: forms DHA-73, DHA-529 and DHA-9, originals plus copies, four photos.</li><li>{a('fees/index.html','Fees')}: adult or child renewal $127 in total at VFS ($67 consular + $60 VFS), card only{src("vfsinfo")}.</li><li>{a('smart-id/index.html','Smart ID')}: first ID and re-issue options and what is still unclear.</li><li>{a('lost-passport/index.html','Lost passport and emergency travel certificate')}.</li><li>{a('citizenship/index.html','Citizenship')}: the 6 May 2025 Constitutional Court ruling, who is excluded, and the DHA online status check.</li><li>{a('tracking/index.html','Tracking your application')}.</li><li>{a('embassy-consulates/index.html','Embassy and consulates')}: areas, hours and emergency numbers.</li><li>{a('faq/index.html','FAQ')}.</li></ul>
 {CONF}
 <div class="card note"><strong>Not eligible at VFS centres:</strong> The Department of Home Affairs says applicants aged 16 and above (including those 15 turning 16 that year) must first get an identity document before a passport, and citizens born abroad whose birth is not yet registered cannot be served at the centres. They must go to a South African mission{src("dha")}. The VFS Global service list does not include the Emergency Travel Certificate{src("vfsinfo")}.</div>
 <p>Need to know which South African banks let you apply for a Smart ID in South Africa? See the separate {a(S["finder"],"SA Smart ID bank branch finder")}.</p>'''
@@ -86,7 +161,7 @@ b=f'''<h1>What to bring to VFS for a South African passport</h1><p>Summarised fr
 s.page('what-to-bring/index.html',"What to bring for a South African passport or ID in the USA","Forms DHA-73, DHA-529 and DHA-9, documents, copies and photo rules for a South African passport or ID at VFS in the USA.",b)
 rows=[("Passport renewal, adult","$67","$60","$127"),("Passport renewal, adult MAXI","$133","$60","$193"),("Passport lost, adult","$134","$60","$194"),("Passport lost MAXI, adult","$266","$60","$326"),("Passport renewal, child","$67","$60","$127"),("Passport renewal, MAXI child","$133","$60","$193"),("Passport lost, child","$134","$60","$194"),("Passport lost MAXI, child","$266","$60","$326"),("First ID issuance / Smart ID first issuance","$0","$60","$60"),("Smart ID re-issue","$12","$60","$72"),("Birth registration","$6","$60","$66")]
 b=f'''<h1>Fees for South African passports and ID at VFS in the USA</h1><p>As published by VFS Global on {D}{src("vfsinfo")}. Pay at the centre by credit or debit card only; other payment methods are not accepted. The VFS service fee is $60 on top of the consular fee.</p>
-<div class="wrap"><table><tr><th>Service</th><th>Consular fee (USD)</th><th>VFS service fee (USD)</th><th>Total (USD)</th></tr>{''.join(f"<tr><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td></tr>" for r in rows)}</table></div>
+<div class="wrap" tabindex="0" role="region" aria-label="Published fees"><table><tr><th>Service</th><th>Consular fee (USD)</th><th>VFS service fee (USD)</th><th>Total (USD)</th></tr>{''.join(f"<tr><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td></tr>" for r in rows)}</table></div>
 <p class="src">MAXI is the larger passport; the Embassy checklist describes Regular as 32 pages and MAXI as 48 pages{src("embadult")}. Photos at the centre carry a separate fee that VFS does not state on the page we checked{src("vfsinfo")}.</p>
 <h2>Embassy fees (money order, no cards)</h2><div class="card"><ul><li>Passport: $67 regular (32 pages), $133 MAXI (48 pages), $134 regular lost/damaged/stolen, $266 MAXI lost/damaged/stolen, by money order payable to SA Embassy{src("embadult")}.</li><li>Re-issue of ID book: $12 by money order{src("embid")}.</li><li>Emergency Travel Certificate: $12 by money order{src("etc")}.</li><li>The Embassy accepts the exact fee in cash or money order, no card payments{src("emb")}.</li></ul></div>
 <div class="card note"><strong>Citizenship.</strong> The DHA reinstatement FAQ does not state a fee. The Embassy citizenship page still publishes $25 for a section 6(2) retention application made before foreign citizenship is taken, and $25 for a section 26(4) exemption for foreign citizenship taken before 6 October 1995{src("dhacit","embcit")}. See {a('../citizenship/index.html','citizenship')}.</div>'''
@@ -129,7 +204,7 @@ faq=[("Can I walk in at a VFS centre?",f"Book an appointment online. The Departm
 ("I became a US citizen. Did I lose my South African citizenship?",f"The Constitutional Court declared the automatic-loss rule in section 6(1)(a) invalid from 6 October 1995, and DHA says people who lost citizenship under that rule are considered to have retained it. Voluntary renunciation, and loss before 6 October 1995, are excluded. Check your own record on the DHA portal. See {a('../citizenship/index.html','citizenship')}{src('cc','dhacit')}."),
 ("When should I apply?",f"VFS recommends booking at least 18 months before expiry; the Embassy suggests 12 months{src('vfsinfo','emb')}."),
 ("Can I renew my Smart ID card at VFS?",f"Sources disagree. VFS Global lists a Smart identity card re-issue fee. The Department of Home Affairs and the consulate notices do not list that re-issue. See {a('../smart-id/index.html','Smart ID')}.")]
-s.page('faq/index.html',"FAQ: South African passports and Smart ID in the USA","Short sourced answers about South African passport renewal, Smart ID, VFS appointments, citizenship and emergency travel in the USA.",'<h1>FAQ: South African passports and ID in the USA</h1>'+''.join(f'<div class="card"><strong>{q}</strong><p>{x}</p></div>' for q,x in faq),faq=faq)
+s.page('faq/index.html',"FAQ: South African passports and Smart ID in the USA","Short sourced answers about South African passport renewal, Smart ID, VFS appointments, citizenship and emergency travel in the USA.",'<h1>FAQ: South African passports and ID in the USA</h1>'+''.join(f'<h2>{q}</h2><div class="card"><p>{x}</p></div>' for q,x in faq),faq=faq)
 b=f'''<h1>Retaining South African citizenship when you take another citizenship</h1>
 <p>For South Africans in the United States who have taken US citizenship, or another citizenship, or who are about to. This page summarises the Constitutional Court order of 6 May 2025 and the Home Affairs pages that implement it. It is not legal advice. Confirm your own record before you travel or pay.</p>
 <h2>What the Court decided</h2>
@@ -234,6 +309,18 @@ b=f'''<h1>Disclaimer</h1>
 <h2>Contact and corrections</h2>
 <p>This site has no contact form, no advice line, and no user accounts. It does not answer personal questions or check an individual case. For a correction, compare the sentence with the official page linked beside it and follow that official page.</p>'''
 s.page('disclaimer/index.html',"Disclaimer for this South African passport guide in the USA","Accuracy, no warranty, liability limits, external links, affiliation and corrections for this unofficial South African passport guide.",b,lastmod="2026-10-26",crumb="Disclaimer")
-hub="".join(f'<li><a href="{p}">{esc(t)}</a></li>' for p,t in NAV)
+find='<h1>All pages</h1><p>Type in the search box at the top of this page. The list below stays complete if search is not available.</p><p id="index-status" class="index-status" aria-live="polite">Showing every page.</p><div id="page-index">'
+for g,items in GROUPS:
+    find+=f'<section><h2>{esc(g)}</h2><ul class="index-list">'+''.join(
+        f'<li data-keywords="{esc(ALIAS.get(p,""))}"><a class="jump" href="{href(p)}"><span class="lt">{esc(t)}</span><span class="ls">{esc(BLURB[p])}</span></a></li>'
+        for p,t in items)+'</ul></section>'
+find+='</div>'
+s.page('find/index.html',"Full page list for this South African passport guide","Search or browse every page in this unofficial guide to South African passports and identity documents in the United States.",find)
+hub="".join(f'<li><a href="{p}">{esc(t)}</a></li>' for g,items in GROUPS for p,t in items)
 s.page('404.html',"Page not found: South African passport guide in the USA","That page is not on this guide. Open the VFS centres, documents, fees, Smart ID, lost passport, citizenship, tracking or FAQ pages.",f'<h1>Page not found</h1><p>That address is not a page on this guide.</p><ul>{hub}</ul>',sitemap=False,article=False,robots="noindex",crumb="Page not found")
-s.finish(); print(len(s.pages),'pages',len(C),'centres',len(M),'missions')
+s.finish()
+facts=["100 Peachtree Street, Suite 225, 2nd Floor, Atlanta, GA 30303","$127","6 May 2025","XA7XgB_UwrIRvQyNVsnWpSyTyaU6e3-v4g4RBw8RAVI","Last checked: 26 Oct 2026","3051 Massachusetts Avenue NW","(212) 692-2401","Independent guide. Not a government website.","services.vfsglobal.com/usa/en/zap"]
+blob="\n".join(open(os.path.join(s.out,p),encoding="utf-8").read() for p in s.pages)
+missing=[fact for fact in facts if fact not in blob]
+if missing: raise SystemExit("Missing facts after build: "+"; ".join(missing))
+print(len(s.pages),'pages',len(s.indexable),'in sitemap',len(C),'centres',len(M),'missions')
