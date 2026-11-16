@@ -395,7 +395,6 @@ DOCK_JS=r'''(function(){
   measure();
   onScroll();
 })();'''
-TOC_BOOT='<script>if(window.matchMedia("(min-width:960px)").matches){var d=document.currentScript.previousElementSibling;if(d&&d.tagName==="DETAILS")d.open=true;}</script>'
 
 class Site:
     def __init__(s,root,base,brand,groups,order,footer,css,related=None,disclaimer="",verify=None):
@@ -403,7 +402,7 @@ class Site:
         s.footer=footer; s.css=css; s.pages=[]; s.indexable=[]; s.related=related or []; s.disclaimer=disclaimer or ""; s.verify=verify or {}
         s.titles={p:t for g,items in groups for p,t in items}
         s.titles['index.html']='Home'
-        s.summaries={}; s.read_next={}; s.aliases={}; s.long_pages=set(); s.flow_toc=set(); s._search_cache=None
+        s.summaries={}; s.read_next={}; s.aliases={}; s.long_pages=set(); s._search_cache=None
         s.stage={p:g for g,items in groups for p,t in items}
         if os.path.exists(s.out): shutil.rmtree(s.out)
         os.makedirs(s.out)
@@ -449,14 +448,12 @@ class Site:
         if summary and path in s.long_pages and '<h1' in body:
             body=body.replace('</h1>','</h1><div class="inshort"><p><strong>In short.</strong> '+esc(summary)+'</p></div>',1)
         seen={}
-        h2_items=[]
         def addid(m):
             inner=m.group(1)
             base=slug(inner)
             n=seen.get(base,0)+1
             seen[base]=n
             id_=base if n==1 else f"{base}-{n}"
-            h2_items.append((id_, inner))
             return f'<h2 id="{id_}">{inner}</h2>'
         body=re.sub(r'<h2>(.*?)</h2>',addid,body,flags=re.S)
         h2pos=body.find('<h2')
@@ -464,11 +461,6 @@ class Site:
             head, rest = body, ''
         else:
             head, rest = body[:h2pos], body[h2pos:]
-        toc=''
-        if len(h2_items)>=3:
-            opened=' open' if len(h2_items)<=8 else ''
-            lis=''.join(f'<li><a href="#{id_}">{esc(H.unescape(re.sub("<[^>]+>","",inner)))}</a></li>' for id_,inner in h2_items)
-            toc=f'<nav class="toc" aria-label="On this page"><details class="toc-details"{opened}><summary>On this page</summary><ul>{lis}</ul></details>{TOC_BOOT}</nav>'
         nav_bits=[]
         for g,items in s.groups:
             links=[]
@@ -549,13 +541,6 @@ class Site:
             blurb_html=f'<span class="ls">{esc(blurb)}</span>' if blurb else ''
             rn_items.append(f'<li><a class="jump" href="{href(dest)}"><span class="lt">{esc(label)}</span>{blurb_html}</a></li>')
         readnext='<aside class="readnext" aria-labelledby="read-next"><h2 id="read-next">Read next</h2><ul>'+''.join(rn_items)+'</ul></aside>' if rn_items else ''
-        layout_cls='layout' if (not toc or path in s.flow_toc) else 'layout has-toc'
-        if toc and path in s.flow_toc:
-            layout_cls='layout'
-        elif toc:
-            layout_cls='layout has-toc'
-        else:
-            layout_cls='layout'
         book='<a class="book" href="https://services.vfsglobal.com/usa/en/zap/" rel="noopener"><span class="book-long">Book an appointment</span><span class="book-short">Book</span></a>'
         h=f'''<!doctype html><html lang="en-US"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#014233"><title>{esc(title)}</title><meta name="description" content="{esc(desc)}">{''.join(bits)}<style>{s.css}</style><script defer src="/_vercel/insights/script.js"></script></head><body>
 <a class="skip" href="#content">Skip to content</a>
@@ -569,7 +554,7 @@ class Site:
 <nav id="site-nav" class="top" aria-label="Topics">{nav}</nav>
 <span class="nav-fade nav-fade-left" aria-hidden="true"></span><span class="nav-fade nav-fade-right" aria-hidden="true"></span><span class="nav-hint" aria-hidden="true"></span>
 </div></header></div>
-<main id="content" tabindex="-1"><div class="notice" role="note"><div class="shell"><p class="unofficial"><strong>{UNOFFICIAL}</strong></p><p>{esc(s.disclaimer)}</p></div></div><div class="shell">{crumbs_html}<article class="content" aria-labelledby="page-title"><p class="meta"><span class="checked">Last checked: {when}</span></p><div class="head-block">{head}</div><div class="{layout_cls}">{toc}<div class="rest">{rest}{pn}{readnext}</div></div></article></div></main>
+<main id="content" tabindex="-1"><div class="notice" role="note"><div class="shell"><p class="unofficial"><strong>{UNOFFICIAL}</strong></p><p>{esc(s.disclaimer)}</p></div></div><div class="shell">{crumbs_html}<article class="content" aria-labelledby="page-title"><p class="meta"><span class="checked">Last checked: {when}</span></p><div class="head-block">{head}</div><div class="layout"><div class="rest">{rest}{pn}{readnext}</div></div></article></div></main>
 <footer><div class="shell"><nav class="footnav" aria-label="About this guide"><a href="/find/">All pages</a><a href="/faq/">Common questions</a><a href="/disclaimer/">Disclaimer</a></nav>{foot}{disc}{rel}<p>Last checked: {when}.</p></div></footer>
 <script type="application/json" id="search-data">{s._search_json()}</script><script>{SEARCH_JS}</script><script>{DOCK_JS}</script></body></html>'''
         h=rewrite_hrefs(path,h)
@@ -594,6 +579,8 @@ class Site:
                 raise SystemExit("Missing Google verification on "+path)
             if "Read next" not in html:
                 raise SystemExit("Missing Read next on "+path)
+            if "On this page" in html or 'class="toc"' in html or "has-toc" in html:
+                raise SystemExit("In-page contents box still present on "+path)
             if path!="404.html":
                 if f'rel="canonical" href="{s.base}/' not in html and f'rel="canonical" href="{s.base}"' not in html:
                     raise SystemExit("Missing canonical on "+path)
@@ -835,18 +822,8 @@ h3{font-size:1.25rem;margin:var(--s24) 0 var(--s12)}
 .inshort{background:#eef4f1;border-left:6px solid #1d4f3e;border-radius:12px;padding:var(--s16) var(--s24);margin:0 0 var(--s24)}
 .inshort p{margin:0;max-width:66ch}
 .layout{display:flex;flex-direction:column;gap:var(--s24);min-width:0;margin-top:var(--s24)}
-.toc{order:-1}
-.rest{order:0;min-width:0}
+.rest{min-width:0}
 .rest>h2:first-child,.rest>h3:first-child{margin-top:0}
-@media(min-width:960px){
-.layout.has-toc{display:grid;grid-template-columns:minmax(0,1fr) 18rem;column-gap:var(--s32);align-items:start}
-.layout.has-toc .rest{grid-column:1;grid-row:1;order:0}
-.layout.has-toc .toc{grid-column:2;grid-row:1;order:0;position:sticky;top:var(--scroll-pad);max-height:calc(100vh - var(--scroll-pad) - var(--s16));overflow:auto}
-}
-.toc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:var(--s12) var(--s24) var(--s16);margin:0}
-.toc summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer}
-.toc ul{list-style:none;margin:0;padding:0 0 var(--s12)}
-.toc a{display:flex;align-items:center;min-height:44px;padding:8px 0}
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:var(--s24);margin:0 0 var(--s16)}
 h2+.card,h3+.card{margin-top:0}
 .card>:first-child{margin-top:0}
@@ -871,7 +848,7 @@ th{background:#e7efe9;color:var(--ink)}
 .content li+li{margin-top:var(--s12)}
 .content li{max-width:66ch}
 .tasks,.link-grid,.readnext ul,.index-list{list-style:none;padding:0;margin:var(--s16) 0 0;display:grid;gap:var(--s16);grid-template-columns:1fr}
-.tasks li,.link-grid li,.index-list li,.readnext li,.toc li,.crumbs li,.pn{max-width:none}
+.tasks li,.link-grid li,.index-list li,.readnext li,.crumbs li,.pn{max-width:none}
 @media(min-width:720px){.tasks,.link-grid,.readnext ul,.index-list{grid-template-columns:1fr 1fr}}
 .topic{margin:0 0 var(--s32)}
 .topic>h3{margin-top:0}
@@ -904,7 +881,7 @@ footer p{max-width:66ch}
 #site-header a.book:focus-visible,#site-header .sitesearch button:focus-visible{outline-color:#fff}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 @media(forced-colors:active){
-.card,.inshort,.notice,.jump,.toc,.pn a,a.book,.search-toggle,.grp>summary{border:1px solid CanvasText}
+.card,.inshort,.notice,.jump,.pn a,a.book,.search-toggle,.grp>summary{border:1px solid CanvasText}
 a.book{background:ButtonFace;color:ButtonText}
 }
 '''

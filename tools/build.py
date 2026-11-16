@@ -90,7 +90,6 @@ s.summaries=BLURB
 s.read_next=READ
 s.aliases=ALIAS
 s.long_pages={'centres/index.html','what-to-bring/index.html','fees/index.html','smart-id/index.html','lost-passport/index.html','tracking/index.html','embassy-consulates/index.html','citizenship/index.html','faq/index.html'}
-s.flow_toc={'index.html','find/index.html','fees/index.html','centres/index.html'}
 BOOK=f'<div class="card warn"><strong>Book an appointment online.</strong> The Department of Home Affairs lists an online booking link for every United States centre{src("dha")}. VFS Global tells you to book an appointment{src("vfsinfo")}. The New York consulate says you may use the centre that is most convenient{src("ny")}. Book only through {a(S["vfs"],"services.vfsglobal.com/usa/en/zap")}.</div>'
 CONF=f'''<div class="card conf"><strong>Conflicts between official sources (as of {D})</strong><ul>
 <li><strong>Processing time.</strong> VFS Global says six to eight weeks{src("vfsinfo")}. The Embassy says a minimum of 6 to 8 months for applications lodged with it{src("emb","embadult")}.</li>
