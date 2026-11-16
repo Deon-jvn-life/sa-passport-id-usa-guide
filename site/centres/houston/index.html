@@ -125,18 +125,8 @@ h3{font-size:1.25rem;margin:var(--s24) 0 var(--s12)}
 .inshort{background:#eef4f1;border-left:6px solid #1d4f3e;border-radius:12px;padding:var(--s16) var(--s24);margin:0 0 var(--s24)}
 .inshort p{margin:0;max-width:66ch}
 .layout{display:flex;flex-direction:column;gap:var(--s24);min-width:0;margin-top:var(--s24)}
-.toc{order:-1}
-.rest{order:0;min-width:0}
+.rest{min-width:0}
 .rest>h2:first-child,.rest>h3:first-child{margin-top:0}
-@media(min-width:960px){
-.layout.has-toc{display:grid;grid-template-columns:minmax(0,1fr) 18rem;column-gap:var(--s32);align-items:start}
-.layout.has-toc .rest{grid-column:1;grid-row:1;order:0}
-.layout.has-toc .toc{grid-column:2;grid-row:1;order:0;position:sticky;top:var(--scroll-pad);max-height:calc(100vh - var(--scroll-pad) - var(--s16));overflow:auto}
-}
-.toc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:var(--s12) var(--s24) var(--s16);margin:0}
-.toc summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer}
-.toc ul{list-style:none;margin:0;padding:0 0 var(--s12)}
-.toc a{display:flex;align-items:center;min-height:44px;padding:8px 0}
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:var(--s24);margin:0 0 var(--s16)}
 h2+.card,h3+.card{margin-top:0}
 .card>:first-child{margin-top:0}
@@ -161,7 +151,7 @@ th{background:#e7efe9;color:var(--ink)}
 .content li+li{margin-top:var(--s12)}
 .content li{max-width:66ch}
 .tasks,.link-grid,.readnext ul,.index-list{list-style:none;padding:0;margin:var(--s16) 0 0;display:grid;gap:var(--s16);grid-template-columns:1fr}
-.tasks li,.link-grid li,.index-list li,.readnext li,.toc li,.crumbs li,.pn{max-width:none}
+.tasks li,.link-grid li,.index-list li,.readnext li,.crumbs li,.pn{max-width:none}
 @media(min-width:720px){.tasks,.link-grid,.readnext ul,.index-list{grid-template-columns:1fr 1fr}}
 .topic{margin:0 0 var(--s32)}
 .topic>h3{margin-top:0}
@@ -194,7 +184,7 @@ footer p{max-width:66ch}
 #site-header a.book:focus-visible,#site-header .sitesearch button:focus-visible{outline-color:#fff}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 @media(forced-colors:active){
-.card,.inshort,.notice,.jump,.toc,.pn a,a.book,.search-toggle,.grp>summary{border:1px solid CanvasText}
+.card,.inshort,.notice,.jump,.pn a,a.book,.search-toggle,.grp>summary{border:1px solid CanvasText}
 a.book{background:ButtonFace;color:ButtonText}
 }
 </style><script defer src="/_vercel/insights/script.js"></script></head><body>
