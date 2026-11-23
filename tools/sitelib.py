@@ -4,7 +4,6 @@ from urllib.parse import urljoin
 D="26 Oct 2026"
 ISO="2026-10-26"
 HEADER_PHRASE="Independent guide. Not a government website."
-UNOFFICIAL="Unofficial and independent guide. Not a government website."
 def esc(s): return H.escape(s,quote=True)
 def a(url,text='source'): return f'<a href="{esc(url)}" rel="noopener">{text}</a>'
 def slug(t):
@@ -256,14 +255,25 @@ DOCK_JS=r'''(function(){
     }
     return n||124;
   }
+  function isNarrow(){
+    return window.matchMedia("(max-width: 899px)").matches;
+  }
   function place(){
     var b=header.getBoundingClientRect().bottom;
     if(b<0) b=0;
     document.documentElement.style.setProperty("--header-bottom", b+"px");
+    if(isNarrow()){
+      var h=Math.ceil(header.getBoundingClientRect().height);
+      slot.style.height=h+"px";
+      document.documentElement.style.setProperty("--scroll-pad", (h+12)+"px");
+    } else {
+      document.documentElement.style.removeProperty("--scroll-pad");
+      if(!docked) slot.style.height="";
+    }
   }
   function setSearchOpen(open){
     if(!search||!toggle) return;
-    if(open && !document.body.classList.contains("is-docked")) open=false;
+    if(open && !document.body.classList.contains("is-docked") && !isNarrow()) open=false;
     search.classList.toggle("is-open", open);
     toggle.setAttribute("aria-expanded", open?"true":"false");
     if(open) closeGroups();
@@ -321,8 +331,16 @@ DOCK_JS=r'''(function(){
     docked=false;
     measure();
   }
+  var didRevealNarrow=false;
   function onScroll(){
     var y=window.scrollY||document.documentElement.scrollTop||0;
+    if(isNarrow()){
+      if(docked) undock();
+      place();
+      if(!didRevealNarrow){ didRevealNarrow=true; revealCurrent(); }
+      return;
+    }
+    didRevealNarrow=false;
     if(!fullH) measure();
     var line=fullH-compactPx();
     if(!docked){
@@ -380,7 +398,7 @@ DOCK_JS=r'''(function(){
       }
     }
     if(header.contains(t)||(t.classList&&t.classList.contains("skip"))) return;
-    var edge=compactPx()+12;
+    var edge=isNarrow()?(header.getBoundingClientRect().height+12):(compactPx()+12);
     var r=t.getBoundingClientRect();
     if(r.bottom>edge && r.top>=edge) return;
     var y=(window.scrollY||0)+r.top-edge;
@@ -408,7 +426,7 @@ class Site:
         os.makedirs(s.out)
     def _search_json(s):
         if s._search_cache is not None: return s._search_cache
-        rows=[{"u":"/","t":"Home","s":"Start here, top tasks, and every topic.","g":"Home","k":"guide home passport identity"}]
+        rows=[{"u":"/","t":"Home","s":"Renew a South African passport in the USA at VFS Global.","g":"Home","k":"guide home passport identity renewal vfs usa"}]
         for g,items in s.groups:
             for p,t in items:
                 rows.append({"u":href(p),"t":t,"s":s.summaries.get(p,""),"g":g,"k":s.aliases.get(p,"")})
@@ -445,8 +463,11 @@ class Site:
         if '<h1>' in body:
             body=body.replace('<h1>','<h1 id="page-title">',1)
         summary=s.summaries.get(path,'')
+        under=f'<p class="checked">Last checked: {esc(when)}</p>'
         if summary and path in s.long_pages and '<h1' in body:
-            body=body.replace('</h1>','</h1><div class="inshort"><p><strong>In short.</strong> '+esc(summary)+'</p></div>',1)
+            under+=f'<div class="inshort"><p><strong>In short.</strong> {esc(summary)}</p></div>'
+        if '<h1' in body:
+            body=body.replace('</h1>','</h1>'+under,1)
         seen={}
         def addid(m):
             inner=m.group(1)
@@ -541,12 +562,12 @@ class Site:
             blurb_html=f'<span class="ls">{esc(blurb)}</span>' if blurb else ''
             rn_items.append(f'<li><a class="jump" href="{href(dest)}"><span class="lt">{esc(label)}</span>{blurb_html}</a></li>')
         readnext='<aside class="readnext" aria-labelledby="read-next"><h2 id="read-next">Read next</h2><ul>'+''.join(rn_items)+'</ul></aside>' if rn_items else ''
-        book='<a class="book" href="https://services.vfsglobal.com/usa/en/zap/" rel="noopener"><span class="book-long">Book an appointment</span><span class="book-short">Book</span></a>'
+        book='<a class="book" href="https://services.vfsglobal.com/usa/en/zap/" rel="noopener" aria-label="Book an appointment"><span class="book-long">Book an appointment</span><span class="book-short">Book</span></a>'
         h=f'''<!doctype html><html lang="en-US"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#014233"><title>{esc(title)}</title><meta name="description" content="{esc(desc)}">{''.join(bits)}<style>{s.css}</style><script defer src="/_vercel/insights/script.js"></script></head><body>
 <a class="skip" href="#content">Skip to content</a>
 <div id="head-slot"><header id="site-header"><div class="shell">
 <a class="brand" href="/">{FLAGS}<span class="name"><span class="name-main">South African passport and identity guide</span><span class="name-compact">Passport guide</span></span></a>
-<p class="name-sub">{HEADER_PHRASE}</p>
+<p class="name-sub"><span class="name-sub-lead">{HEADER_PHRASE}</span> <a href="/disclaimer/">Disclaimer</a></p>
 <button type="button" class="search-toggle" aria-expanded="false" aria-controls="site-search"><svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="search-toggle-text">Search</span></button>
 <a class="headlink" href="/find/">All pages</a>
 <span class="headcta">{book}</span>
@@ -554,7 +575,7 @@ class Site:
 <nav id="site-nav" class="top" aria-label="Topics">{nav}</nav>
 <span class="nav-fade nav-fade-left" aria-hidden="true"></span><span class="nav-fade nav-fade-right" aria-hidden="true"></span><span class="nav-hint" aria-hidden="true"></span>
 </div></header></div>
-<main id="content" tabindex="-1"><div class="notice" role="note"><div class="shell"><p class="unofficial"><strong>{UNOFFICIAL}</strong></p><p>{esc(s.disclaimer)}</p></div></div><div class="shell">{crumbs_html}<article class="content" aria-labelledby="page-title"><p class="meta"><span class="checked">Last checked: {when}</span></p><div class="head-block">{head}</div><div class="layout"><div class="rest">{rest}{pn}{readnext}</div></div></article></div></main>
+<main id="content" tabindex="-1"><div class="shell">{crumbs_html}<article class="content" aria-labelledby="page-title"><div class="head-block">{head}</div><div class="layout"><div class="rest">{rest}{pn}{readnext}</div></div></article></div></main>
 <footer><div class="shell"><nav class="footnav" aria-label="About this guide"><a href="/find/">All pages</a><a href="/faq/">Common questions</a><a href="/disclaimer/">Disclaimer</a></nav>{foot}{disc}{rel}<p>Last checked: {when}.</p></div></footer>
 <script type="application/json" id="search-data">{s._search_json()}</script><script>{SEARCH_JS}</script><script>{DOCK_JS}</script></body></html>'''
         h=rewrite_hrefs(path,h)
@@ -569,12 +590,14 @@ class Site:
         open(os.path.join(s.out,"robots.txt"),"w").write("".join(f"User-agent: {b}\nAllow: /\n\n" for b in bots)+f"Sitemap: {s.base}/sitemap.xml\n")
         open(os.path.join(s.out,"sitemap.xml"),"w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+"".join(f"<url><loc>{canon_url(s.base,p)}</loc><lastmod>{mod}</lastmod></url>\n" for p,mod in sorted(s.indexable))+"</urlset>\n")
         gsc=s.verify.get("google-site-verification","")
-        needles=(HEADER_PHRASE,UNOFFICIAL,s.disclaimer,"Last checked:","/_vercel/insights/script.js","system-ui,-apple-system,\"Segoe UI\",Roboto,sans-serif")
+        needles=(HEADER_PHRASE,s.disclaimer,"Last checked:","/_vercel/insights/script.js","system-ui,-apple-system,\"Segoe UI\",Roboto,sans-serif",'href="/disclaimer/"','class="checked"')
         for path in s.pages:
             html=open(os.path.join(s.out,path),encoding="utf-8").read()
             for needle in needles:
                 if needle and needle not in html:
                     raise SystemExit(f"Missing {needle} on {path}")
+            if 'class="notice"' in html:
+                raise SystemExit("Separate disclaimer bar still present on "+path)
             if gsc and gsc not in html:
                 raise SystemExit("Missing Google verification on "+path)
             if "Read next" not in html:
@@ -669,6 +692,10 @@ def _contrast_report(css):
     if ink_gold<4.5:
         raise SystemExit(f"Book button contrast failed: {ink_gold:.2f}")
     rows.append(f"book button ink on gold: {ink_gold:.2f}:1")
+    checked=_contrast("#3e3a34","#f4f1ea")
+    if checked<4.5:
+        raise SystemExit(f"Last checked contrast failed: {checked:.2f}")
+    rows.append(f"last checked on paper: {checked:.2f}:1")
     return {"worst_white":worst_white,"worst_gold":worst_gold,"rows":rows}
 
 def _check_links(out, pages):
@@ -695,7 +722,7 @@ def _check_links(out, pages):
                 if frag not in tids: missing.append(f"{path} -> {href_v} (missing #{frag})")
     return missing
 
-CSS=r''':root{--s12:12px;--s16:16px;--s24:24px;--s32:32px;--s40:40px;--header-compact:176px;--scroll-pad:188px;--header-bottom:176px;--ink:#1a1814;--paper:#f4f1ea;--link:#0a3d66;--visited:#3d2a6b;--line:#d9d3c7;--gold:#ffe08a;--head-1:#014233;--head-2:#7A1A28;--head-3:#10244F;--head-bg:linear-gradient(90deg,var(--head-1) 0%,var(--head-2) 52%,var(--head-3) 100%)}
+CSS=r''':root{--s12:12px;--s16:16px;--s24:24px;--s32:32px;--s40:40px;--header-compact:176px;--scroll-pad:188px;--header-bottom:176px;--ink:#1a1814;--paper:#f4f1ea;--link:#0a3d66;--visited:#3d2a6b;--line:#d9d3c7;--gold:#ffe08a;--head-1:#014233;--head-2:#014233;--head-3:#014233;--head-bg:#014233}
 @media(min-width:900px){:root{--header-compact:124px;--scroll-pad:136px}}
 *,*::before,*::after{box-sizing:border-box}
 html{color-scheme:light}
@@ -710,7 +737,7 @@ h1,h2,h3,h4,h5,h6,.topic,section[id]{scroll-margin-top:var(--scroll-pad)}
 .skip{position:fixed;left:var(--s12);top:var(--s12);transform:translateY(-160%);background:#fff;color:var(--ink);padding:var(--s12) var(--s16);z-index:80;min-height:44px;font-weight:700;border-radius:8px}
 .skip:focus,.skip:focus-visible{transform:none}
 #head-slot{min-width:0}
-#site-header{background-color:var(--head-1);background-image:var(--head-bg);color:#fff;position:relative;z-index:30}
+#site-header{background-color:var(--head-1);background-image:none;color:#fff;position:relative;z-index:30}
 #site-header a{color:#fff}
 #site-header .shell{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"brand cta" "sub sub" "links links" "search search" "nav nav";align-items:center;column-gap:var(--s16);row-gap:var(--s12);padding-top:var(--s24);padding-bottom:var(--s24);position:relative}
 .brand{grid-area:brand;display:flex;align-items:center;gap:var(--s12);min-width:0;color:#fff;text-decoration:none;font-weight:700;min-height:44px}
@@ -718,7 +745,8 @@ h1,h2,h3,h4,h5,h6,.topic,section[id]{scroll-margin-top:var(--scroll-pad)}
 .name{display:flex;flex-direction:column;min-width:0}
 .name-main{font-size:1.25rem;line-height:1.3;font-weight:700}
 .name-compact{display:none}
-.name-sub{grid-area:sub;margin:0;font-size:1rem;font-weight:700;color:#fff;line-height:1.35}
+.name-sub{grid-area:sub;margin:0;font-size:1rem;font-weight:400;color:#fff;line-height:1.35}
+.name-sub a{font-weight:700;text-decoration:underline;text-underline-offset:.15em}
 .headlink{grid-area:links;display:inline-flex;align-items:center;min-height:44px;padding:var(--s12) 0;font-weight:700;text-decoration:underline;text-underline-offset:.15em}
 .headcta{grid-area:cta;display:flex;align-items:center;justify-self:end}
 .book-short{display:none}
@@ -748,7 +776,7 @@ nav.top{grid-area:nav;display:flex;flex-wrap:nowrap;align-items:stretch;gap:var(
 .glinks a{display:flex;align-items:center;min-height:44px;padding:var(--s12) var(--s16);color:#fff;text-decoration:underline;text-underline-offset:.15em}
 .glinks a.is-current{font-weight:700;background:rgba(255,255,255,.16);border-radius:8px}
 @media(max-width:1099px){
-.grp[open] .glinks{position:fixed;z-index:46;top:var(--header-bottom);left:0;right:0;max-width:none;background:#10244F;border:2px solid #fff;border-radius:0 0 12px 12px;padding:var(--s12);box-shadow:0 12px 24px rgba(0,0,0,.35);max-height:min(60vh,24rem);overflow:auto}
+.grp[open] .glinks{position:fixed;z-index:46;top:var(--header-bottom);left:0;right:0;max-width:none;background:#014233;border:2px solid #fff;border-radius:0 0 12px 12px;padding:var(--s12);box-shadow:0 12px 24px rgba(0,0,0,.35);max-height:min(60vh,24rem);overflow:auto}
 }
 @media(min-width:720px){
 #site-header .shell{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"brand links cta" "sub sub sub" "search search search" "nav nav nav"}
@@ -759,7 +787,7 @@ nav.top{grid-area:nav;display:flex;flex-wrap:nowrap;align-items:stretch;gap:var(
 #site-header .shell{grid-template-areas:"brand links cta" "sub sub sub" "search search search" "nav nav nav"}
 nav.top{overflow:visible;scroll-snap-type:none;justify-content:flex-start;gap:8px;padding-top:var(--s16)}
 .grp>summary{border-radius:8px;background:transparent;font-size:1rem;padding:8px var(--s12)}
-.grp[open] .glinks{position:absolute;z-index:34;top:100%;left:0;right:auto;background:#10244F;border:2px solid #fff;border-radius:8px;padding:var(--s12);box-shadow:0 8px 24px rgba(0,0,0,.28);max-height:min(70vh,28rem);overflow:auto}
+.grp[open] .glinks{position:absolute;z-index:34;top:100%;left:0;right:auto;background:#014233;border:2px solid #fff;border-radius:8px;padding:var(--s12);box-shadow:0 8px 24px rgba(0,0,0,.28);max-height:min(70vh,28rem);overflow:auto}
 .grp:nth-last-child(-n+2)[open] .glinks{left:auto;right:0}
 }
 .nav-fade,.nav-hint{display:none}
@@ -769,19 +797,21 @@ body.is-docked #site-header .shell{height:100%;padding:var(--s12) var(--s16);row
 body.is-docked .brand{min-height:44px;min-width:0}
 body.is-docked .name-main,body.is-docked .headlink{display:none}
 body.is-docked .name-compact{display:block;font-size:1rem;line-height:1.2;font-weight:700;white-space:nowrap}
-body.is-docked .name-sub{font-size:.9375rem;line-height:1.3}
+body.is-docked .name-sub{display:flex;align-items:baseline;gap:.35em;min-width:0;font-size:.9375rem;line-height:1.3;white-space:nowrap;overflow:hidden}
+body.is-docked .name-sub-lead{min-width:0;overflow:hidden;text-overflow:ellipsis}
+body.is-docked .name-sub a{flex:none}
 body.is-docked .headcta{margin:0}
 body.is-docked a.book{min-height:44px;padding:8px var(--s12)}
 body.is-docked .book-long{display:none}
 body.is-docked .book-short{display:inline}
 body.is-docked .search-toggle{display:inline-flex}
-body.is-docked .search-wrap{display:none;margin:0;position:absolute;top:100%;left:0;right:0;z-index:36;background-color:var(--head-1);background-image:var(--head-bg);padding:var(--s16) 0 var(--s24);box-shadow:0 12px 24px rgba(0,0,0,.28)}
+body.is-docked .search-wrap{display:none;margin:0;position:absolute;top:100%;left:0;right:0;z-index:36;background-color:var(--head-1);background-image:none;padding:var(--s16) 0 var(--s24);box-shadow:0 12px 24px rgba(0,0,0,.28)}
 body.is-docked .search-wrap.is-open{display:block}
 body.is-docked nav.top{display:flex;margin:0;padding:0;border:0;background:transparent;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:8px;min-width:0;overflow-x:auto}
 body.is-docked .grp>summary{min-height:44px;padding:8px var(--s12)}
 body.is-docked .grp.has-current>summary{background:rgba(255,255,255,.16);box-shadow:inset 0 -3px 0 var(--gold)}
 body.is-docked.nav-more-right .nav-fade-right,body.is-docked.nav-more-left .nav-fade-left{display:block;position:absolute;bottom:var(--s12);height:44px;width:var(--s32);pointer-events:none;z-index:4}
-body.is-docked.nav-more-right .nav-fade-right{right:0;background:linear-gradient(90deg,rgba(16,36,79,0),#10244F 72%)}
+body.is-docked.nav-more-right .nav-fade-right{right:0;background:linear-gradient(90deg,rgba(1,66,51,0),#014233 72%)}
 body.is-docked.nav-more-left .nav-fade-left{left:0;background:linear-gradient(90deg,#014233 28%,rgba(1,66,51,0))}
 body.is-docked.nav-more-right .nav-hint{display:flex;align-items:center;justify-content:flex-end;position:absolute;right:8px;bottom:var(--s12);width:var(--s24);height:44px;pointer-events:none;z-index:5}
 @media(min-width:900px){
@@ -797,10 +827,31 @@ body.is-docked .flag{height:16px}
 body.is-docked nav.top{overflow:visible}
 body.is-docked .grp>summary{border-radius:8px}
 }
-.notice{background:#fff6db;color:var(--ink);border-bottom:3px solid #8a5a00}
-.notice .shell{padding-top:var(--s16);padding-bottom:var(--s16)}
-.notice p{margin:0 0 var(--s12);max-width:66ch}
-.notice p:last-child{margin-bottom:0}
+@media(max-width:899px){
+#head-slot{height:12rem}
+#site-header{position:fixed;top:0;left:0;right:0;z-index:40;box-shadow:0 2px 12px rgba(0,0,0,.28)}
+#site-header .shell{grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:44px auto auto;grid-template-areas:"brand searchbtn cta" "sub sub sub" "nav nav nav";align-items:center;padding-top:var(--s12);padding-bottom:var(--s12);row-gap:8px}
+.name-main,.headlink{display:none}
+.name-compact{display:block;font-size:1rem;line-height:1.2;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.name-sub{font-size:.9375rem;line-height:1.35;text-wrap:balance}
+.flags{flex-direction:column-reverse;align-items:center;gap:2px}
+.flag{height:14px}
+.headcta{margin:0}
+#site-header a.book,#site-header a.book:visited{min-height:32px;min-width:32px;padding:2px 8px;background:transparent;color:#fff;border:1px solid #fff;border-radius:6px;font-size:.875rem;font-weight:700;line-height:1.2}
+#site-header a.book:hover,#site-header a.book:visited:hover{background:rgba(255,255,255,.16);color:#fff}
+.book-long{display:none}
+.book-short{display:inline}
+.search-toggle{display:inline-flex;padding:0;width:44px}
+.search-toggle-text{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.search-wrap{display:none;margin:0;position:absolute;top:100%;left:0;right:0;z-index:36;background:#014233;padding:var(--s16) 0 var(--s24);box-shadow:0 12px 24px rgba(0,0,0,.28)}
+.search-wrap.is-open{display:block}
+nav.top{margin:0;padding:0;border:0;min-width:0;gap:8px}
+.grp>summary{min-height:32px;min-width:24px;padding:2px 8px;font-size:.875rem;line-height:1.2;gap:6px}
+body.nav-more-right .nav-fade-right,body.nav-more-left .nav-fade-left{display:block;position:absolute;bottom:var(--s12);height:32px;width:var(--s32);pointer-events:none;z-index:4}
+body.nav-more-right .nav-fade-right{right:0;background:linear-gradient(90deg,rgba(1,66,51,0),#014233 72%)}
+body.nav-more-left .nav-fade-left{left:0;background:linear-gradient(90deg,#014233 28%,rgba(1,66,51,0))}
+body.nav-more-right .nav-hint{display:flex;align-items:center;justify-content:flex-end;position:absolute;right:8px;bottom:var(--s12);width:var(--s24);height:32px;pointer-events:none;z-index:5}
+}
 main{min-width:0}
 main>.shell{padding-top:var(--s24);padding-bottom:var(--s40)}
 main:focus{outline:none}
@@ -809,8 +860,7 @@ main:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
 .crumbs li{display:flex;align-items:center;min-height:44px}
 .crumbs li+li::before{content:"/";margin:0 var(--s12);color:#3e3a34}
 .crumbs a{display:inline-flex;align-items:center;min-height:44px}
-.meta{display:flex;flex-wrap:wrap;gap:var(--s12);align-items:center;margin:0 0 var(--s24)}
-.checked{display:inline-flex;align-items:center;min-height:44px;background:#e5f2ea;color:#143024;border:1px solid #1d4f3e;border-radius:8px;padding:var(--s12) var(--s16);font-size:1rem}
+.checked{margin:0 0 var(--s16);color:#3e3a34;font-size:.9375rem;font-weight:400;line-height:1.4}
 article.content{min-width:0}
 .head-block{margin:0}
 .head-block p{margin:0 0 var(--s16)}
@@ -832,6 +882,7 @@ h2+.card,h3+.card{margin-top:0}
 .card ul,.card ol{margin:var(--s12) 0 0;padding-left:1.25rem}
 .card li+li{margin-top:var(--s12)}
 .warn{border-left:6px solid #9b2c2c;background:#fdeeee}
+.booknote{padding:var(--s16);border-left:4px solid #1d4f3e}
 .note{border-left:6px solid #8a5a00;background:#fff8ec}
 .conf{border-left:6px solid #5c3d78;background:#f6f1fa}
 .wrap{overflow-x:auto;max-width:100%;margin:var(--s16) 0}
@@ -868,7 +919,7 @@ a.jump:visited .lt{color:var(--visited)}
 .index-status{font-weight:700;margin:0 0 var(--s16)}
 a{color:var(--link)}
 a:visited{color:var(--visited)}
-.content a,.crumbs a,footer a,.notice a,.search-empty a{text-decoration:underline;text-underline-offset:.12em}
+.content a,.crumbs a,footer a,.search-empty a{text-decoration:underline;text-underline-offset:.12em}
 footer{border-top:1px solid var(--line);color:var(--ink);margin-top:var(--s32)}
 footer .shell{padding-top:var(--s32);padding-bottom:var(--s40)}
 footer p{max-width:66ch}
@@ -881,7 +932,7 @@ footer p{max-width:66ch}
 #site-header a.book:focus-visible,#site-header .sitesearch button:focus-visible{outline-color:#fff}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 @media(forced-colors:active){
-.card,.inshort,.notice,.jump,.pn a,a.book,.search-toggle,.grp>summary{border:1px solid CanvasText}
+.card,.inshort,.jump,.pn a,a.book,.search-toggle,.grp>summary{border:1px solid CanvasText}
 a.book{background:ButtonFace;color:ButtonText}
 }
 '''
