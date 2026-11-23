@@ -3,5 +3,29 @@
   "buildCommand": "",
   "installCommand": "",
   "outputDirectory": "site",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "sa-passport-id-usa-guide-w1ab\\.vercel\\.app"
+        }
+      ],
+      "destination": "https://sa-passport-id-usa-guide.vercel.app/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "sa-passport-id-usa-guide-w1ab\\.vercel\\.app"
+        }
+      ],
+      "destination": "https://sa-passport-id-usa-guide.vercel.app/:path*",
+      "permanent": true
+    }
+  ]
 }
